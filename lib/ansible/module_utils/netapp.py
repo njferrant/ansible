@@ -35,6 +35,7 @@ except ImportError:
 from ansible.module_utils.six.moves.urllib.error import HTTPError
 from ansible.module_utils.urls import open_url
 from ansible.module_utils.api import basic_auth_argument_spec
+from ansible.module_utils.basic import env_fallback
 
 HAS_NETAPP_LIB = False
 try:
@@ -81,10 +82,30 @@ def has_sf_sdk():
 def na_ontap_host_argument_spec():
 
     return dict(
-        hostname=dict(required=True, type='str'),
-        username=dict(required=True, type='str', aliases=['user']),
-        password=dict(required=True, type='str', aliases=['pass'], no_log=True),
-        https=dict(required=False, type='bool', default=False)
+        hostname=dict(
+            required=True,
+            type='str',
+            fallback=(env_fallback, ['NA_ONTAP_HOSTNAME'])
+        ),
+        username=dict(
+            required=True,
+            type='str',
+            aliases=['user'],
+            fallback=(env_fallback, ['NA_ONTAP_USERNAME'])
+        ),
+        password=dict(
+            required=True,
+            type='str',
+            aliases=['pass'],
+            no_log=True,
+            fallback=(env_fallback, ['NA_ONTAP_PASSWORD'])
+        ),
+        https=dict(
+            required=False,
+            type='bool',
+            default=False,
+            fallback=(env_fallback, ['NA_ONTAP_HTTPS'])
+        )
     )
 
 
